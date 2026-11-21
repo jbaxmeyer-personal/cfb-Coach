@@ -3,6 +3,34 @@ import { TEAMS, POSITIONS, POS_ORDER, ROSTER_MAX, CONFERENCES } from './teams.js
 import { rng, makeRoster, autoDepth, repairDepth, units, clamp, gauss, makeName, pick } from './players.js';
 import { simGame, OFFENSES, DEFENSES, DEFAULT_PLAN } from './sim.js';
 
+// Orient regular-season games so every team gets home games equal to half its schedule
+// (6 of 12). Every team plays an even number of games, so an Euler circuit through the
+// "who plays whom" graph gives each team exactly as many home games as road games.
+function balanceHomeAway(games, r) {
+  const reg = games.filter(g => g.kind === 'reg' && !g.neutral);
+  const adj = {};
+  reg.forEach((g, i) => { (adj[g.h] = adj[g.h] || []).push(i); (adj[g.a] = adj[g.a] || []).push(i); });
+  for (const k in adj) adj[k] = shuffle(r, adj[k]);
+  const used = new Array(reg.length).fill(false);
+  const ptr = {};
+  for (const start of shuffle(r, Object.keys(adj).map(Number))) {
+    const stack = [start];
+    while (stack.length) {
+      const v = stack[stack.length - 1];
+      const list = adj[v];
+      let p = ptr[v] || 0;
+      while (p < list.length && used[list[p]]) p++;
+      ptr[v] = p;
+      if (p === list.length) { stack.pop(); continue; }
+      const g = reg[list[p]];
+      used[list[p]] = true;
+      const u = g.h === v ? g.a : g.h;
+      g.a = v; g.h = u;                // travelling v -> u: u hosts
+      stack.push(u);
+    }
+  }
+}
+
 const SAVE_KEY = 'cfb-coach-save-v1';
 export const REG_WEEKS = 12;
 export const RECRUIT_POINTS = 100;   // weekly base, scaled by prestige
@@ -86,6 +114,7 @@ export class League {
       }
     }
     // Notre Dame may have gaps (weeks without an ACC bye): fill against no one (bye) is fine.
+    balanceHomeAway(this.games, r);
   }
 
   weekGames(week = this.week) { return this.games.filter(g => g.week === week); }
@@ -406,7 +435,10 @@ export class League {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return null;
-      return Object.assign(new League(), JSON.parse(raw));
+      const L = Object.assign(new League(), JSON.parse(raw));
+      // Older saves had lopsided home/away splits: re-balance if the season hasn't started.
+      if (L.phase === 'regular' && L.games.every(g => !g.box)) balanceHomeAway(L.games, Math.random);
+      return L;
     } catch (e) { return null; }
   }
   static clear() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ } }
