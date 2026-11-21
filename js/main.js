@@ -11,7 +11,21 @@ let sub = { team: 'depth', recruit: 'board', league: 'top25' };
 let filters = { pos: 'ALL', stars: 0, conf: 'SEC' };
 
 const T = (id) => TEAMS[id];
-const logo = (id, size = '') => `<span class="logo ${size}" style="background:${T(id).color};border-color:${T(id).alt};color:${T(id).alt === '#FFFFFF' ? '#fff' : T(id).alt}">${T(id).short}</span>`;
+// Generic football helmet in the school's colours: shell = primary, stripe/number = secondary, grey facemask.
+const helmetSvg = (id) => {
+  const t = T(id);
+  const fs = t.short.length >= 4 ? 15 : t.short.length === 3 ? 18 : 21;
+  return `<svg viewBox="0 0 100 80" class="helmet" aria-label="${t.name}">
+    <path d="M16 60 C6 40 14 12 44 7 C68 3 86 17 88 37 L88 45 L72 47 L66 60 Z" fill="${t.color}" stroke="#0006" stroke-width="2"/>
+    <path d="M20 34 C26 15 46 8 66 10" fill="none" stroke="${t.alt}" stroke-width="6" stroke-linecap="round"/>
+    <path d="M20 34 C26 15 46 8 66 10" fill="none" stroke="${t.color}" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="58" cy="42" r="4" fill="#0005"/>
+    <path d="M72 44 L97 44 M70 53 L95 53 M95 40 L95 60 M84 44 L84 58" stroke="#9aa3b5" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+    <path d="M66 60 L74 60" stroke="#9aa3b5" stroke-width="3.5" stroke-linecap="round"/>
+    <text x="40" y="${41 + fs / 3}" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="${fs}" fill="${t.alt}" stroke="#0007" stroke-width="0.8" paint-order="stroke">${t.short}</text>
+  </svg>`;
+};
+const logo = (id, size = '') => `<span class="logo ${size}">${helmetSvg(id)}</span>`;
 const rk = (id) => { const r = L.rankOf(id); return r <= 25 ? `<span class="rank">#${r}</span>` : ''; };
 const nm = (id) => `${rk(id)}${T(id).name}`;
 const starsTxt = (n) => (n ? `<span class="stars">${'★'.repeat(n)}</span>` : '<span class="muted">—</span>');
@@ -195,7 +209,7 @@ function league() {
   if (sub.league === 'top25') {
     body = `<div class="card"><table><tr><th>#</th><th>Team</th><th class="num">Record</th><th class="num">Conf</th></tr>${L.rankings.slice(0, 25).map((id, i) => {
       const t = L.team(id);
-      return `<tr class="${id === L.user.teamId ? 'me' : ''}"><td>${i + 1}</td><td><span class="tchip"><i style="background:${T(id).color}"></i>${T(id).name}</span></td><td class="num">${t.w}-${t.l}</td><td class="num muted">${T(id).conf === 'IND' ? 'Ind' : CONFERENCES[T(id).conf]}</td></tr>`;
+      return `<tr class="${id === L.user.teamId ? 'me' : ''}"><td>${i + 1}</td><td><span class="tchip"><span class="mini">${helmetSvg(id)}</span>${T(id).name}</span></td><td class="num">${t.w}-${t.l}</td><td class="num muted">${T(id).conf === 'IND' ? 'Ind' : CONFERENCES[T(id).conf]}</td></tr>`;
     }).join('')}</table></div>`;
   } else if (sub.league === 'standings') {
     const cs = ['SEC', 'B1G', 'ACC', 'B12'];
