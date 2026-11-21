@@ -1,4 +1,4 @@
-// Power 4 conferences + Notre Dame (2026 alignment). Names and colours only, no logos.
+// Power 4 conferences + Notre Dame (2026 alignment). Names, colours and ESPN logo IDs.
 // prestige: 1-100 starting program strength (recruiting pull + expectations).
 export const CONFERENCES = {
   SEC: 'SEC', B1G: 'Big Ten', ACC: 'ACC', B12: 'Big 12', IND: 'Independent',
@@ -50,7 +50,21 @@ const ALT = {
   COLO: '#000000', HOU: '#FFFFFF', ISU: '#F1BE48', KU: '#E8000D', KSU: '#FFFFFF', OKST: '#000000', TCU: '#A3A9AC', TTU: '#000000',
   UCF: '#000000', UTAH: '#FFFFFF', WVU: '#EAAA00', ND: '#C99700',
 };
-export const TEAMS = RAW.map(([name, short, conf, color, prestige], i) => ({ id: i, name, short, conf, color, alt: ALT[short] || '#FFFFFF', prestige }));
+// ESPN team IDs -> logos hot-linked from ESPN's CDN (not bundled in this repo).
+const ESPN = {
+  BAMA: 333, ARK: 8, AUB: 2, FLA: 57, UGA: 61, UK: 96, LSU: 99, MSST: 344, MIZ: 142, OU: 201, MISS: 145, SC: 2579,
+  TENN: 2633, TEX: 251, TAMU: 245, VAN: 238,
+  ILL: 356, IU: 84, IOWA: 2294, MD: 120, MICH: 130, MSU: 127, MINN: 135, NEB: 158, NW: 77, OSU: 194, ORE: 2483,
+  PSU: 213, PUR: 2509, RUT: 164, UCLA: 26, USC: 30, UW: 264, WIS: 275,
+  BC: 103, CAL: 25, CLEM: 228, DUKE: 150, FSU: 52, GT: 59, LOU: 97, MIA: 2390, NCST: 152, UNC: 153, PITT: 221,
+  SMU: 2567, STAN: 24, SYR: 183, UVA: 258, VT: 259, WAKE: 154,
+  ARIZ: 12, ASU: 9, BAY: 239, BYU: 252, CIN: 2132, COLO: 38, HOU: 248, ISU: 66, KU: 2305, KSU: 2306, OKST: 197,
+  TCU: 2628, TTU: 2641, UCF: 2116, UTAH: 254, WVU: 277,
+  ND: 87,
+};
+const espnLogo = (id, dark = true) => `https://a.espncdn.com/i/teamlogos/ncaa/${dark ? '500-dark' : '500'}/${id}.png`;
+export const TEAMS = RAW.map(([name, short, conf, color, prestige], i) => ({ id: i, name, short, conf, color, alt: ALT[short] || '#FFFFFF', prestige,
+  logo: ESPN[short] ? espnLogo(ESPN[short]) : null, logoLight: ESPN[short] ? espnLogo(ESPN[short], false) : null }));
 export const TEAM_BY_SHORT = Object.fromEntries(TEAMS.map(t => [t.short, t]));
 
 export const FIRST_NAMES = ['Jaylen','Marcus','Tyler','Jordan','Caleb','Malik','Trey','Devin','Isaiah','Brandon','Cameron','Elijah','Josh','Chris','Darius','Xavier','Jalen','Bryce','Drew','Cole','Tre','Kendrick','Austin','Noah','Ethan','Carson','Quinn','Dante','Jace','Ty','Andre','Micah','Zion','Keon','Jamari','Nico','Luke','Blake','Mason','Garrett','Kobe','Deion','Amari','Rashad','Cade','Brock','Hunter','Logan','Javon','Terrell','DJ','AJ','Shedeur','Arch','Quinton','Tavion','Emeka','Kyren','Omarion','Sam','Jack','Will','Riley','Bo','Gavin','Max','Owen','Peyton','Reggie','Tommy'];

@@ -25,7 +25,14 @@ const helmetSvg = (id) => {
     <text x="40" y="${41 + fs / 3}" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="${fs}" fill="${t.alt}" stroke="#0007" stroke-width="0.8" paint-order="stroke">${t.short}</text>
   </svg>`;
 };
-const logo = (id, size = '') => `<span class="logo ${size}">${helmetSvg(id)}</span>`;
+// Real team logo (dark-background variant, then standard, then the generic helmet if the CDN fails).
+const teamMark = (id) => {
+  const t = T(id);
+  if (!t.logo) return helmetSvg(id);
+  return `<img class="tlogo" src="${t.logo}" alt="${t.name}" loading="lazy" decoding="async" data-alt="${t.logoLight}"
+    onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt='';}else{this.style.display='none';this.nextElementSibling.style.display='';}"><span class="fallback" style="display:none">${helmetSvg(id)}</span>`;
+};
+const logo = (id, size = '') => `<span class="logo ${size}">${teamMark(id)}</span>`;
 const rk = (id) => { const r = L.rankOf(id); return r <= 25 ? `<span class="rank">#${r}</span>` : ''; };
 const nm = (id) => `${rk(id)}${T(id).name}`;
 const starsTxt = (n) => (n ? `<span class="stars">${'★'.repeat(n)}</span>` : '<span class="muted">—</span>');
@@ -209,7 +216,7 @@ function league() {
   if (sub.league === 'top25') {
     body = `<div class="card"><table><tr><th>#</th><th>Team</th><th class="num">Record</th><th class="num">Conf</th></tr>${L.rankings.slice(0, 25).map((id, i) => {
       const t = L.team(id);
-      return `<tr class="${id === L.user.teamId ? 'me' : ''}"><td>${i + 1}</td><td><span class="tchip"><span class="mini">${helmetSvg(id)}</span>${T(id).name}</span></td><td class="num">${t.w}-${t.l}</td><td class="num muted">${T(id).conf === 'IND' ? 'Ind' : CONFERENCES[T(id).conf]}</td></tr>`;
+      return `<tr class="${id === L.user.teamId ? 'me' : ''}"><td>${i + 1}</td><td><span class="tchip"><span class="mini">${teamMark(id)}</span>${T(id).name}</span></td><td class="num">${t.w}-${t.l}</td><td class="num muted">${T(id).conf === 'IND' ? 'Ind' : CONFERENCES[T(id).conf]}</td></tr>`;
     }).join('')}</table></div>`;
   } else if (sub.league === 'standings') {
     const cs = ['SEC', 'B1G', 'ACC', 'B12'];

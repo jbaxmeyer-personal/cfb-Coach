@@ -52,12 +52,15 @@ input, select { font: inherit; color: var(--text); background: var(--panel2); bo
 .matchup .side { flex: 1; text-align: center; }
 .matchup .side b { display: block; font-size: 16px; margin-top: 4px; }
 .matchup .vs { color: var(--dim); font-weight: 800; }
-.logo { width: 64px; height: 52px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
-.logo .helmet { width: 100%; height: 100%; filter: drop-shadow(0 2px 3px #0008); }
-#top .logo { width: 54px; height: 44px; }
-.school .logo { width: 48px; height: 39px; }
-.tchip .mini { width: 28px; height: 22px; display: inline-flex; }
-.tchip .mini svg { width: 100%; height: 100%; }
+.logo { width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.logo .helmet, .logo .tlogo { width: 100%; height: 100%; filter: drop-shadow(0 2px 3px #0008); }
+.tlogo { object-fit: contain; display: block; }
+.fallback { width: 100%; height: 100%; }
+.fallback svg { width: 100%; height: 100%; }
+#top .logo { width: 46px; height: 46px; }
+.school .logo { width: 42px; height: 42px; }
+.tchip .mini { width: 24px; height: 24px; display: inline-flex; }
+.tchip .mini svg, .tchip .mini img { width: 100%; height: 100%; object-fit: contain; }
 .news div { font-size: 13px; padding: 6px 0; border-bottom: 1px solid #1d2540; }
 .news div:last-child { border-bottom: 0; }
 

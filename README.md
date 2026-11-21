@@ -4,7 +4,7 @@ A simple college football coaching sim for mobile web. Pick a Power 4 school (or
 
 **Play:** https://jbaxmeyer-personal.github.io/cfb-coach/
 
-- 68 programs in their 2026 conferences (SEC, Big Ten, ACC, Big 12, plus Notre Dame). School names and colours only.
+- 68 programs in their 2026 conferences (SEC, Big Ten, ACC, Big 12, plus Notre Dame). Team logos are hot-linked from ESPN's CDN (falls back to a generic helmet in school colours if they don't load).
 - 12-game schedule, conference championship games, and a 12-team playoff (four conference champions get in; the top four seeds get byes).
 - Recruiting: a weekly points budget spread across your board. Prospects commit during the season, and the rest sign after the title game.
 - Offseason: seniors graduate, early draft entries, player progression, transfer-portal fills, prestige changes, the hot seat, and job offers.
